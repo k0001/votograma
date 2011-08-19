@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    {% block head %}
+      <meta http-equiv="Content-Type" value="text/html; charset=utf-8" />
+      <title>Votograma</title>
+      <link rel="stylesheet" type="text/css" media="all" href="{{ url_for('static', filename='style/base.css') }}" />
+      <script type="application/javascript" src="{{ url_for('static', filename='js/jquery-1.4.3.min.js') }}"></script>
+    {% endblock head %}
+  </head>
+  <body>
+    {% block body %}{% endblock %}
+    <footer>
+    </footer>
+  </body>
+</html>
