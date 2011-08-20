@@ -1,6 +1,25 @@
 {% extends "layout.html" %}
 {% block head %}
   {{ super() }}
+  <script type="application/javascript" src="{{ url_for('static', filename='js/index.js') }}"></script>
+  <style>
+a.active {
+  font-weight: bold;
+}
+  </style>
 {% endblock %}
 {% block body %}
+  <div id="main">
+    <h1><a href="#/">Votograma</a></h1>
+    <div id="selectors">
+      <div id="distritos">
+        {% for distrito in distritos -%}
+          <a class="distrito" data-distrito_tp_id="{{ distrito.distrito_tp_id }}" href="#/{{ distrito.distrito_tp_id }}">{{ distrito.distrito_tp_id }}</a>
+        {%- endfor %}
+      </div>
+      <div id="secciones"></div>
+      <div id="circuitos"></div>
+    </div>
+    <div id="mesas"></div>
+  </div>
 {% endblock %}

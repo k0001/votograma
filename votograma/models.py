@@ -65,5 +65,5 @@ class Mesa(db.Model, _AddReprMixin):
         sep = '_' if d['c'][-1].isdigit() else d['c'][-1]
         d['pdf_filename'] = '{d}{s}{c}{sep}{m}.pdf'.format(sep=sep, **d)
         return (u'http://www.primarias2011.gob.ar/paginas/paginaspdf'
-                u'/{d}/{s}/{c}/{pdf_filename}') % d
+                u'/{d}/{s}/{c}/{pdf_filename}').format(**d)
 

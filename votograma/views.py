@@ -18,12 +18,88 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from flask   import render_template
-from votograma import app
-from votograma.models import db, Mesa
+import json
+from   operator import itemgetter
+from   flask import render_template, jsonify, request
+from   votograma import app
+from   votograma.models import db, Mesa
 
 
 @app.route('/')
 def index():
-    mesas = Mesa.query.all()
-    return render_template('index.html', mesas=mesas)
+    q = Mesa.query.with_entities(Mesa.distrito_tp_id).distinct()
+    distritos = [{'distrito_tp_id': x.distrito_tp_id} for x in q.all()]
+    return render_template('index.html', distritos=distritos)
+
+
+@app.route('/distritos.json')
+def distritos_json():
+    q = Mesa.query
+    distrito_tp_id = request.args.get('distrito_tp_id')
+    if distrito_tp_id:
+        q = q.filter(Mesa.distrito_tp_id==distrito_tp_id)
+    q = q.with_entities(Mesa.distrito_tp_id).distinct()
+    distritos = [{'distrito_tp_id': x.seccion_tp_id} for x in q.all()]
+    return jsonify(distritos=distritos)
+
+@app.route('/secciones.json')
+def secciones_json():
+    q = Mesa.query
+    distrito_tp_id = request.args.get('distrito_tp_id')
+    if distrito_tp_id:
+        q = q.filter(Mesa.distrito_tp_id==distrito_tp_id)
+    seccion_tp_id = request.args.get('seccion_tp_id')
+    if seccion_tp_id:
+        q = q.filter(Mesa.seccion_tp_id==seccion_tp_id)
+    q = q.with_entities(Mesa.seccion_tp_id,
+                        Mesa.distrito_tp_id).distinct()
+    secciones = [{'seccion_tp_id': x.seccion_tp_id,
+                  'distrito_tp_id': x.distrito_tp_id} for x in q.all()]
+    return jsonify(secciones=secciones)
+
+@app.route('/circuitos.json')
+def circuitos_json():
+    q = Mesa.query
+    distrito_tp_id = request.args.get('distrito_tp_id')
+    if distrito_tp_id:
+        q = q.filter(Mesa.distrito_tp_id==distrito_tp_id)
+    seccion_tp_id = request.args.get('seccion_tp_id')
+    if seccion_tp_id:
+        q = q.filter(Mesa.seccion_tp_id==seccion_tp_id)
+    circuito_tp_id = request.args.get('circuito_tp_id')
+    if circuito_tp_id:
+        q = q.filter(Mesa.circuito_tp_id==circuito_tp_id)
+    q = q.with_entities(Mesa.circuito_tp_id,
+                        Mesa.seccion_tp_id,
+                        Mesa.distrito_tp_id).distinct()
+    circuitos = [{'circuito_tp_id': x.circuito_tp_id,
+                  'seccion_tp_id': x.seccion_tp_id,
+                  'distrito_tp_id': x.distrito_tp_id}
+                 for x in q.all()]
+    return jsonify(circuitos=circuitos)
+
+@app.route('/mesas.json')
+def mesas_json():
+    q = Mesa.query
+    distrito_tp_id = request.args.get('distrito_tp_id')
+    if distrito_tp_id:
+        q = q.filter(Mesa.distrito_tp_id==distrito_tp_id)
+    seccion_tp_id = request.args.get('seccion_tp_id')
+    if seccion_tp_id:
+        q = q.filter(Mesa.seccion_tp_id==seccion_tp_id)
+    circuito_tp_id = request.args.get('circuito_tp_id')
+    if circuito_tp_id:
+        q = q.filter(Mesa.circuito_tp_id==circuito_tp_id)
+    mesa_tp_id = request.args.get('mesa_tp_id')
+    if mesa_tp_id:
+        q = q.filter(Mesa.mesa_tp_id==mesa_tp_id)
+    mesas = [{'id': x.id,
+              'mesa_tp_id': x.mesa_tp_id,
+              'circuito_tp_id': x.circuito_tp_id,
+              'seccion_tp_id': x.seccion_tp_id,
+              'distrito_tp_id': x.distrito_tp_id,
+              'telegrama_png_url': x.telegrama_png_url,
+              'telegrama_pdf_url': x.telegrama_pdf_url}
+             for x in q.all()]
+    return jsonify(mesas=mesas)
+
